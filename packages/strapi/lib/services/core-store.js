@@ -3,10 +3,17 @@
 const coreStoreModel = config => ({
   connection: config.get('database.defaultConnection'),
   uid: 'strapi::core-store',
-  internal: true,
   info: {
     name: 'core_store',
     description: '',
+  },
+  pluginsOptions: {
+    'content-manager': {
+      visible: false,
+    },
+    'content-type-builder': {
+      visible: false,
+    },
   },
   attributes: {
     key: {
