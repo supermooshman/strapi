@@ -652,7 +652,6 @@ module.exports = async ({ models, target }, ctx, { selfFinalize = false } = {}) 
       target[model]._attributes = definition.attributes;
       target[model].updateRelations = relations.update;
       target[model].deleteRelations = relations.deleteRelations;
-      target[model].privateAttributes = contentTypesUtils.getPrivateAttributes(target[model]);
 
       return async () => {
         try {

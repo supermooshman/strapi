@@ -108,6 +108,63 @@ const isMediaAttribute = attr => {
   return (attr.collection || attr.model) === 'file' && attr.plugin === 'upload';
 };
 
+const getKind = obj => obj.kind || 'collectionType';
+
+const pickSchema = model => {
+  const schema = _.cloneDeep(
+    _.pick(model, ['connection', 'collectionName', 'info', 'options', 'attributes'])
+  );
+
+  schema.kind = getKind(model);
+  return schema;
+};
+
+const formatContentType = (
+  model,
+  { modelName, modelOrigin, defaultConnection },
+  { apiName, pluginName } = {}
+) => {
+  const contentType = {
+    __schema__: pickSchema(model),
+    kind: getKind(model),
+    modelType: 'contentType',
+    modelName,
+    globalId: model.globalId || _.upperFirst(_.camelCase(modelName)),
+    connection: model.connection || defaultConnection,
+    privateAttributes: getPrivateAttributes(model),
+  };
+
+  switch (modelOrigin) {
+    case 'api':
+      Object.assign(contentType, {
+        uid: `application::${apiName}.${modelName}`,
+        apiName,
+        collectionName: model.collectionName || modelName.toLocaleLowerCase(),
+      });
+      break;
+    case 'admin':
+      Object.assign(contentType, {
+        uid: `strapi::${modelName}`,
+        plugin: 'admin',
+        identity: model.identity || _.upperFirst(modelName),
+        globalId: model.globalId || _.upperFirst(_.camelCase(`admin-${modelName}`)),
+      });
+      break;
+    case 'plugin':
+      Object.assign(contentType, {
+        uid: `plugins::${pluginName}.${modelName}`,
+        plugin: pluginName,
+        collectionName: model.collectionName || `${pluginName}_${modelName}`.toLowerCase(),
+        globalId: model.globalId || _.upperFirst(_.camelCase(`${pluginName}-${modelName}`)),
+      });
+      break;
+    default:
+      throw new Error('modelOrigin is missing');
+  }
+
+  Object.assign(model, contentType);
+};
+
 module.exports = {
   isScalarAttribute,
   isMediaAttribute,
@@ -124,4 +181,5 @@ module.exports = {
   isSingleType,
   isCollectionType,
   isKind,
+  formatContentType,
 };
