@@ -26,7 +26,7 @@ module.exports = function(strapi) {
       contentTypesUtils.formatContentType(
         // mutate model
         model,
-        { modelName, modelOrigin: 'api', defaultConnection },
+        { modelName, defaultConnection },
         { apiName }
       );
 
@@ -87,7 +87,7 @@ module.exports = function(strapi) {
     contentTypesUtils.formatContentType(
       // mutate model
       model,
-      { modelName, modelOrigin: 'admin', defaultConnection }
+      { modelName, defaultConnection }
     );
 
     strapi.contentTypes[model.uid] = model;
@@ -115,7 +115,7 @@ module.exports = function(strapi) {
       contentTypesUtils.formatContentType(
         // mutate model
         model,
-        { modelName, modelOrigin: 'plugin', defaultConnection },
+        { modelName, defaultConnection },
         { pluginName }
       );
 

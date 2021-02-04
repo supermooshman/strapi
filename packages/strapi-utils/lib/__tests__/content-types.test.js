@@ -9,6 +9,7 @@ const {
 } = require('../content-types');
 
 const createModelWithPrivates = (privateAttributes = []) => ({
+  uid: 'myModel',
   options: {
     privateAttributes,
   },

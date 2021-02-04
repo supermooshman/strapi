@@ -84,10 +84,14 @@ const isCollectionType = ({ kind = COLLECTION_TYPE }) => kind === COLLECTION_TYP
 const isKind = kind => model => model.kind === kind;
 
 const getPrivateAttributes = (model = {}) => {
+  const hasCreatorFields = !model.uid.startsWith('strapi::') && model.modelType !== 'component';
+  const creatorFieldsArePrivate = !_.get(model, 'options.populateCreatorFields', false);
+
   return _.union(
     strapi.config.get('api.responses.privateAttributes', []),
     _.get(model, 'options.privateAttributes', []),
-    _.keys(_.pickBy(model.attributes, attr => !!attr.private))
+    _.keys(_.pickBy(model.attributes, attr => !!attr.private)),
+    hasCreatorFields && creatorFieldsArePrivate ? [CREATED_BY_ATTRIBUTE, UPDATED_BY_ATTRIBUTE] : []
   );
 };
 
@@ -121,48 +125,43 @@ const pickSchema = model => {
 
 const formatContentType = (
   model,
-  { modelName, modelOrigin, defaultConnection },
+  { modelName, defaultConnection },
   { apiName, pluginName } = {}
 ) => {
-  const contentType = {
+  if (apiName) {
+    Object.assign(model, {
+      uid: `application::${apiName}.${modelName}`,
+      apiName,
+      collectionName: model.collectionName || modelName.toLocaleLowerCase(),
+      globalId: getGlobalId(model, modelName, pluginName),
+    });
+  } else if (pluginName) {
+    Object.assign(model, {
+      uid: `plugins::${pluginName}.${modelName}`,
+      plugin: pluginName,
+      collectionName: model.collectionName || `${pluginName}_${modelName}`.toLowerCase(),
+      globalId: getGlobalId(model, modelName, pluginName),
+    });
+  } else {
+    Object.assign(model, {
+      uid: `strapi::${modelName}`,
+      plugin: 'admin',
+      globalId: getGlobalId(model, modelName, 'admin'),
+    });
+  }
+
+  Object.assign(model, {
     __schema__: pickSchema(model),
     kind: getKind(model),
     modelType: 'contentType',
     modelName,
-    globalId: model.globalId || _.upperFirst(_.camelCase(modelName)),
     connection: model.connection || defaultConnection,
     privateAttributes: getPrivateAttributes(model),
-  };
+  });
+};
 
-  switch (modelOrigin) {
-    case 'api':
-      Object.assign(contentType, {
-        uid: `application::${apiName}.${modelName}`,
-        apiName,
-        collectionName: model.collectionName || modelName.toLocaleLowerCase(),
-      });
-      break;
-    case 'admin':
-      Object.assign(contentType, {
-        uid: `strapi::${modelName}`,
-        plugin: 'admin',
-        identity: model.identity || _.upperFirst(modelName),
-        globalId: model.globalId || _.upperFirst(_.camelCase(`admin-${modelName}`)),
-      });
-      break;
-    case 'plugin':
-      Object.assign(contentType, {
-        uid: `plugins::${pluginName}.${modelName}`,
-        plugin: pluginName,
-        collectionName: model.collectionName || `${pluginName}_${modelName}`.toLowerCase(),
-        globalId: model.globalId || _.upperFirst(_.camelCase(`${pluginName}-${modelName}`)),
-      });
-      break;
-    default:
-      throw new Error('modelOrigin is missing');
-  }
-
-  Object.assign(model, contentType);
+const getGlobalId = (model, modelName, prefix = '') => {
+  return model.globalId || _.upperFirst(_.camelCase(`${prefix}-${modelName}`));
 };
 
 module.exports = {
@@ -182,4 +181,5 @@ module.exports = {
   isCollectionType,
   isKind,
   formatContentType,
+  getGlobalId,
 };
