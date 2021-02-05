@@ -6,7 +6,7 @@
   "options": {
     "timestamps": true
   },
-  "pluginsOptions": {
+  "pluginOptions": {
     "content-manager": {
       "visible": false
     },

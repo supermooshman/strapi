@@ -7,7 +7,7 @@ const coreStoreModel = config => ({
     name: 'core_store',
     description: '',
   },
-  pluginsOptions: {
+  pluginOptions: {
     'content-manager': {
       visible: false,
     },

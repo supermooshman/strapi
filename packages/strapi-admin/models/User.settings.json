@@ -4,7 +4,7 @@
     "name": "User",
     "description": ""
   },
-  "pluginsOptions": {
+  "pluginOptions": {
     "content-manager": {
       "visible": false
     },

@@ -94,4 +94,4 @@ const toRelation = (attribute, relation) => {
   };
 };
 
-const isVisible = model => getOr(true, 'pluginsOptions.content-manager.visible', model) === true;
+const isVisible = model => getOr(true, 'pluginOptions.content-manager.visible', model) === true;

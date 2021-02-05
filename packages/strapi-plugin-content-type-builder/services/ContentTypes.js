@@ -12,7 +12,7 @@ const apiHandler = require('./api-handler');
 const { coreUids, pluginsUids } = require('./constants');
 
 const isContentTypeVisible = model =>
-  getOr(true, 'pluginsOptions.content-type-builder.visible', model) === true;
+  getOr(true, 'pluginOptions.content-type-builder.visible', model) === true;
 
 const getRestrictRelationsTo = (contentType = {}) => {
   const { uid } = contentType;

@@ -12,7 +12,7 @@ const webhookModel = config => ({
     name: 'Strapi webhooks',
     description: '',
   },
-  pluginsOptions: {
+  pluginOptions: {
     'content-manager': {
       visible: false,
     },

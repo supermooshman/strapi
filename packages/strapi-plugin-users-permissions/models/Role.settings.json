@@ -3,7 +3,7 @@
     "name": "role",
     "description": ""
   },
-  "pluginsOptions": {
+  "pluginOptions": {
     "content-manager": {
       "visible": false
     }
