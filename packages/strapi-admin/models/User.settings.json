@@ -70,6 +70,12 @@
       "default": false,
       "configurable": false,
       "private": true
+    },
+    "preferedLanguage": {
+      "type": "string",
+      "default": "en",
+      "configurable": false,
+      "required": false
     }
   }
 }
