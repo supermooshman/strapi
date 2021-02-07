@@ -8,7 +8,7 @@
 const cloudinary = require('cloudinary').v2;
 const intoStream = require('into-stream');
 const { errors } = require('strapi-plugin-upload');
-
+require('dotenv').config();
 module.exports = {
   init(config) {
     cloudinary.config(config);
@@ -25,8 +25,12 @@ module.exports = {
             config.filename = `${file.hash}${file.ext}`;
           }
 
+          if (process.env.CLOUDINARY_FOLDER && !customConfig.folder)
+            customConfig.folder = process.env.CLOUDINARY_FOLDER;
+
           const upload_stream = cloudinary.uploader.upload_stream(
             { ...config, ...customConfig },
+
             (err, image) => {
               if (err) {
                 if (err.message.includes('File size too large')) {
